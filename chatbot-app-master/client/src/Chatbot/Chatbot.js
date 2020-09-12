@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import Axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveMessage } from '../_actions/message_actions';
+import Meesage from './Sections/Message'
 
 function Chatbot() {
 
     const dispatch = useDispatch();
+    const messageFromRedux = useSelector(state => state.message.messages);
 
     useEffect(() => {
         eventQuery('Welcome2')
@@ -91,12 +93,30 @@ function Chatbot() {
         }
     }
 
+    const renderOneMessage = (message, i) => {
+        console.log("message:  " , message);
+
+        return <Meesage key={i} who={message.who} text={message.content.text.text} />
+    }
+
+    const renderMessage = (returnedMessages) => {
+        if (returnedMessages) {
+            return returnedMessages.map((message, i) => {
+                return renderOneMessage(message, i);
+            })
+        } else {
+            return null;
+        }
+    }
+
     return (
         <div style={{
             height: 700, width: 700,
             border: '3px solid black', borderRadius: '7px'
         }}>
             <div style={{ height: 644, width: '100%', overflow: 'auto'}}>
+
+                {renderMessage(messageFromRedux)}
 
             </div>
             <input 
