@@ -3,6 +3,8 @@ import Axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveMessage } from '../_actions/message_actions';
 import Meesage from './Sections/Message'
+import Card from './Sections/Card'
+import { List, Icon, Avatar } from 'antd';
 
 function Chatbot() {
 
@@ -22,7 +24,7 @@ function Chatbot() {
                 }
             }
         }
-        console.log(conversation);
+        // console.log(conversation);
         dispatch(saveMessage(conversation));
         const textQueryVariables = {
             text
@@ -30,13 +32,16 @@ function Chatbot() {
         
         try {
             const res = await Axios.post('/api/dialogflow/textQuery', textQueryVariables);
-            const content = res.data.fulfillmentMessages[0];
-            conversation = {
-                who: 'bot',
-                content: content
+
+            for (let content of res.data.fulfillmentMessages) {
+                conversation = {
+                    who: 'bot',
+                    content: content
+                }
+
+                // console.log(conversation);
+                dispatch(saveMessage(conversation));
             }
-            console.log(conversation);
-            dispatch(saveMessage(conversation));
         } catch(e) {
             conversation = {
                 who: 'bot',
@@ -47,7 +52,7 @@ function Chatbot() {
                 }
             }
             dispatch(saveMessage(conversation));
-            console.log(conversation);
+            // console.log(conversation);
         }
 
     }
@@ -59,13 +64,16 @@ function Chatbot() {
         
         try {
             const res = await Axios.post('/api/dialogflow/eventQuery', eventQueryVariables);
-            const content = res.data.fulfillmentMessages[0];
-            let conversation = {
-                who: 'bot',
-                content: content
+
+            for (let content of res.data.fulfillmentMessages) {
+                let conversation = {
+                    who: 'bot',
+                    content: content
+                }
+                dispatch(saveMessage(conversation));
+                // console.log(conversation);
             }
-            dispatch(saveMessage(conversation));
-            console.log(conversation);
+
         } catch(e) {
             let conversation = {
                 who: 'bot',
@@ -76,7 +84,7 @@ function Chatbot() {
                 }
             }
             dispatch(saveMessage(conversation));
-            console.log(conversation);
+            // console.log(conversation);
         }
 
     }
@@ -93,10 +101,30 @@ function Chatbot() {
         }
     }
 
+    const renderCard = (cards) => {
+        return cards.map((card, i) => <Card key={i} cardInfo={card.structValue} />)
+    }
+
     const renderOneMessage = (message, i) => {
         console.log("message:  " , message);
 
-        return <Meesage key={i} who={message.who} text={message.content.text.text} />
+        if (message.content && message.content.text && message.content.text.text) {
+            return <Meesage key={i} who={message.who} text={message.content.text.text} />            
+        } else if (message.content && message.content.payload.fields.card) {
+
+            const AvatarSrc = message.who === 'bot' ? <Icon type="robot" /> : <Icon type="smile" />
+
+            return <div>
+                <List.Item style={{ padding: '1rem' }}>
+                    <List.Item.Meta
+                        avatar={<Avatar icon={AvatarSrc} />}
+                        title={message.who}
+                        description={renderCard(message.content.payload.fields.card.listValue.values)}
+                    />
+                </List.Item>
+            </div>
+        }
+
     }
 
     const renderMessage = (returnedMessages) => {
