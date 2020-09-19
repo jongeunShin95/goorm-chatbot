@@ -1,3 +1,5 @@
+# 20.09.19 완료
+
 chatbot-app is being sponsored by the following tool <br />
 Please help to support us by taking a look and signing up to a free trial
 <a href="https://tracking.gitads.io/?repo=chatbot-app"><img src="https://images.gitads.io/chatbot-app" alt="GitAds"/></a> 
@@ -19,4 +21,3 @@ If you have problem, feel free to ask me ^^
 You can view the tutorial through the link shown below.
 
 https://www.youtube.com/watch?v=h01cuxhteOA&t=4138s
-
